@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # One-time backup service
+  jellyfin-backup:
+    image: docker.io/f0rc3/jellyfinmanager:latest
+    container_name: jellyfin-backup
+    volumes:
+      - ./backup:/backup
+    environment:
+      # Jellyfin connection settings
+      - JELLYFIN_SERVER=http://jellyfin:8096
+      - JELLYFIN_API_KEY=your-api-key-here
+      - JELLYFIN_USER=your-username
+    command: ["-backup"]
+    # Use 'docker-compose up jellyfin-backup' to run
+    profiles:
+      - backup
+
+  # One-time restore service
+  jellyfin-restore:
+    image: docker.io/f0rc3/jellyfinmanager:latest
+    container_name: jellyfin-restore
+    volumes:
+      - ./backup:/backup
+    environment:
+      - JELLYFIN_SERVER=http://jellyfin:8096
+      - JELLYFIN_API_KEY=your-api-key-here
+      - JELLYFIN_USER=your-username
+    command: ["-restore"]
+    # Use 'docker-compose up jellyfin-restore' to run
+    profiles:
+      - restore
+
+  # One-time find missing episodes service
+  jellyfin-find-missing:
+    image: docker.io/f0rc3/jellyfinmanager:latest
+    container_name: jellyfin-find-missing
+    environment:
+      - JELLYFIN_SERVER=http://jellyfin:8096
+      - JELLYFIN_API_KEY=your-api-key-here
+      - JELLYFIN_USER=your-username
+      - TVDB_API_KEY=your-tvdb-api-key
+    command: ["-find-missing"]
+    # Add -include-specials flag if needed:
+    # command: ["-find-missing", "-include-specials"]
+    # Use 'docker-compose up jellyfin-find-missing' to run
+    profiles:
+      - missing
+
+# To use this file:
+# 1. Copy to docker-compose.yml and update the environment variables
+# 2. Create a backup directory: mkdir -p backup
+# 3. Run desired service:
+#    - Backup:       docker-compose --profile backup up
+#    - Restore:      docker-compose --profile restore up
+#    - Find Missing: docker-compose --profile missing up
+
+# For scheduled backups, consider using a cron container like ofelia
+# or system cron with: docker-compose --profile backup up
