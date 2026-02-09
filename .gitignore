@@ -1,3 +1,4 @@
 .idea/
 jellyfin_watched_backup.json
 jellyfinmanager
+build/*.zip

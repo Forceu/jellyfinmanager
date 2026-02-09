@@ -17,7 +17,7 @@ RUN go mod download
 COPY . .
 
 # Build the application with docker tag
-RUN CGO_ENABLED=0 GOOS=linux go build -tags docker -a -installsuffix cgo \
+RUN CGO_ENABLED=0 go build -tags docker -a -installsuffix cgo \
     -ldflags '-extldflags "-static" -s -w' \
     -o jellyfinmanager .
 

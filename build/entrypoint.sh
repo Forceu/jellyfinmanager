@@ -16,7 +16,7 @@ for target in $targets; do
 	fi
 
 	echo "----> Building jellyfinmanager for $target"
-	GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -tags docker -ldflags="-s -w" -o $output github.com/forceu/jellyfinmanager
+	GOOS=$os GOARCH=$arch CGO_ENABLED=0 go build -ldflags="-s -w" -o $output github.com/forceu/jellyfinmanager
 	zip -j $output.zip $output >/dev/null
 	rm $output
 done
