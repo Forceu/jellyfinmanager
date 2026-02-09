@@ -10,6 +10,7 @@ import (
 
 	"github.com/forceu/jellyfinmanager/api/jellyfin"
 	"github.com/forceu/jellyfinmanager/api/tvdb"
+	"github.com/forceu/jellyfinmanager/environment"
 	"github.com/forceu/jellyfinmanager/models"
 )
 
@@ -24,7 +25,7 @@ func main() {
 		apiKey          = flag.String("apikey", "", "Jellyfin API key")
 		userName        = flag.String("user", "", "Jellyfin user name")
 		tvdbAPIKey      = flag.String("tvdb-apikey", "", "TVDB API key (for missing episodes check)")
-		backupFile      = flag.String("file", defaultBackupFile, "Backup file path")
+		backupFile      = flag.String("file", environment.DefaultBackupFile, "Backup file path")
 		backup          = flag.Bool("backup", false, "Perform backup")
 		restore         = flag.Bool("restore", false, "Perform restore")
 		findMissing     = flag.Bool("find-missing", false, "Find missing episodes using TVDB")
