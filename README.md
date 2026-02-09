@@ -2,7 +2,7 @@
 
 A command-line tool for managing Jellyfin watched status, featuring backup/restore capabilities and missing episode detection using TVDB.
 
-> ⚠️ **AI Disclaimer**: Portions of this codebase were generated with the assistance of AI tools.
+> **AI Disclaimer**: Portions of this codebase were generated with the assistance of AI tools.
 
 ## Features
 
@@ -18,16 +18,16 @@ A command-line tool for managing Jellyfin watched status, featuring backup/resto
 
 ```bash
 # Backup watched status
-docker run --rm -v $(pwd)/backup:/backup \
-  ghcr.io/forceu/jellyfinmanager:latest \
+docker run --rm -v jellyfinbackup:/backup \
+  docker.io/f0rc3/jellyfinmanager \
   -backup \
   -server "https://your.jellyfin.server" \
   -apikey "your-api-key" \
   -user "your-username"
 
 # Restore watched status
-docker run --rm -v $(pwd)/backup:/backup \
-  ghcr.io/forceu/jellyfinmanager:latest \
+docker run --rm -v jellyfinbackup:/backup \
+  docker.io/f0rc3/jellyfinmanager \
   -restore \
   -server "https://your.jellyfin.server" \
   -apikey "your-api-key" \
@@ -35,7 +35,7 @@ docker run --rm -v $(pwd)/backup:/backup \
 
 # Find missing episodes
 docker run --rm \
-  ghcr.io/forceu/jellyfinmanager:latest \
+  docker.io/f0rc3/jellyfinmanager \
   -find-missing \
   -server "https://your.jellyfin.server" \
   -apikey "your-api-key" \
@@ -66,7 +66,7 @@ Download the latest release for your platform and run:
 Pull the pre-built image:
 
 ```bash
-docker pull ghcr.io/forceu/jellyfinmanager:latest
+docker pull docker.io/f0rc3/jellyfinmanager
 ```
 
 Or build locally:
@@ -195,7 +195,7 @@ version: '3.8'
 
 services:
   jellyfin-backup:
-    image: ghcr.io/forceu/jellyfinmanager:latest
+    image: docker.io/f0rc3/jellyfinmanager
     container_name: jellyfin-backup
     volumes:
       - ./backup:/backup
@@ -211,7 +211,7 @@ For scheduled runs, consider using a cron container or system cron:
 
 ```bash
 # Add to crontab for daily backups at 2 AM
-0 2 * * * docker run --rm -v /path/to/backup:/backup -e JELLYFIN_SERVER=... ghcr.io/forceu/jellyfinmanager:latest -backup
+0 2 * * * docker run --rm -v /path/to/backup:/backup -e JELLYFIN_SERVER=... docker.io/f0rc3/jellyfinmanager -backup
 ```
 
 ## Backup File Format
