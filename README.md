@@ -214,38 +214,6 @@ For scheduled runs, consider using a cron container or system cron:
 0 2 * * * docker run --rm -v /path/to/backup:/backup -e JELLYFIN_SERVER=... docker.io/f0rc3/jellyfinmanager -backup
 ```
 
-## Backup File Format
-
-The backup file is a JSON file with the following structure:
-
-```json
-{
-  "created_at": "2026-02-09T15:30:00Z",
-  "server_url": "http://jellyfin.example.com:8096",
-  "user_id": "abc123...",
-  "user_name": "username",
-  "version": "1.0.0",
-  "watched_items": [
-    {
-      "id": "item-id",
-      "name": "Movie or Episode Name",
-      "type": 1,
-      "series_name": "TV Show Name",
-      "season_name": "Season 1",
-      "played_date": "2026-01-15T20:30:00Z",
-      "provider_ids": {
-        "Imdb": "tt1234567",
-        "Tmdb": "12345",
-        "Tvdb": "67890"
-      }
-    }
-  ]
-}
-```
-
-**Type values:**
-- `1`: Movie
-- `2`: TV Episode
 
 ## Architecture
 
