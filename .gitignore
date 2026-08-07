@@ -2,3 +2,5 @@
 jellyfin_watched_backup.json
 jellyfinmanager
 build/*.zip
+getMissing.sh
+missingShows.txt

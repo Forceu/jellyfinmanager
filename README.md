@@ -100,6 +100,7 @@ go build -o jellyfinmanager
 | `-restore` | Perform restore operation | ** |
 | `-find-missing` | Find missing episodes using TVDB | ** |
 | `-include-specials` | Include special episodes in missing episode check | No |
+| `-exclude` | Exclude TV show with this TVDB ID in missing episode check | No |
 
 \* Can be set via environment variables  
 \** One operation flag is required
@@ -184,6 +185,18 @@ jellyfinmanager -find-missing \
   -user "username" \
   -tvdb-apikey "your-tvdb-key" \
   -include-specials
+```
+Optional: Exclude specific TV Shows (in this example The Simpsons and South Park):
+
+```bash
+jellyfinmanager -find-missing \
+  -server "http://localhost:8096" \
+  -apikey "your-api-key" \
+  -user "username" \
+  -tvdb-apikey "your-tvdb-key" \
+  -include-specials \
+  -exclude 71663 \
+  -exclude 75897
 ```
 
 ## Docker Compose

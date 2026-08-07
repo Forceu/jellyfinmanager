@@ -15,12 +15,26 @@ import (
 )
 
 const (
-	appVersion = "1.0.0"
+	appVersion = "1.0.1"
 )
+
+type arrayFlags []string
+
+// String method required by flag.Value
+func (i *arrayFlags) String() string {
+	return strings.Join(*i, ", ")
+}
+
+// Set is called once for each flag occurrence
+func (i *arrayFlags) Set(value string) error {
+	*i = append(*i, value)
+	return nil
+}
 
 func main() {
 	// Command-line flags
 	var (
+		excludes        arrayFlags
 		serverURL       = flag.String("server", "", "Jellyfin server URL (e.g., http://localhost:8096)")
 		apiKey          = flag.String("apikey", "", "Jellyfin API key")
 		userName        = flag.String("user", "", "Jellyfin user name")
@@ -31,7 +45,7 @@ func main() {
 		findMissing     = flag.Bool("find-missing", false, "Find missing episodes using TVDB")
 		includeSpecials = flag.Bool("include-specials", false, "Include special episodes in missing episode check")
 	)
-
+	flag.Var(&excludes, "exclude", "TVDB ID of show to exclude")
 	flag.Parse()
 
 	// Validate required flags
@@ -53,7 +67,7 @@ func main() {
 		fmt.Println("\nUsage:")
 		fmt.Println("  Backup:        jellyfinmanager -backup -server URL -apikey KEY -user NAME [-file backup.json]")
 		fmt.Println("  Restore:       jellyfinmanager -restore -server URL -apikey KEY -user NAME [-file backup.json]")
-		fmt.Println("  Find Missing:  jellyfinmanager -find-missing -server URL -apikey KEY -user NAME -tvdb-apikey KEY [-include-specials]")
+		fmt.Println("  Find Missing:  jellyfinmanager -find-missing -server URL -apikey KEY -user NAME -tvdb-apikey KEY [-include-specials] [-exclude]")
 		fmt.Println("\nOr set environment variables:")
 		fmt.Println("  JELLYFIN_SERVER, JELLYFIN_API_KEY, JELLYFIN_USER, TVDB_API_KEY")
 		os.Exit(1)
@@ -91,7 +105,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		err = performFindMissing(client, *tvdbAPIKey, *includeSpecials)
+		err = performFindMissing(client, *tvdbAPIKey, *includeSpecials, excludes)
 		if err != nil {
 			fmt.Printf("Find missing episodes failed: %v\n", err)
 			os.Exit(1)
@@ -364,7 +378,7 @@ func restoreTVShows(client *jellyfin.Client, tvShowMap map[string]map[string][]m
 	return successful, failed
 }
 
-func performFindMissing(jellyfinClient *jellyfin.Client, tvdbAPIKey string, includeSpecials bool) error {
+func performFindMissing(jellyfinClient *jellyfin.Client, tvdbAPIKey string, includeSpecials bool, excludeShows []string) error {
 	fmt.Println("Initializing TVDB client...")
 	tvdbClient := tvdb.NewClient(tvdbAPIKey)
 
@@ -379,6 +393,18 @@ func performFindMissing(jellyfinClient *jellyfin.Client, tvdbAPIKey string, incl
 		return fmt.Errorf("fetching Jellyfin series: %w", err)
 	}
 	fmt.Printf("✓ Found %d series in Jellyfin\n", len(series))
+	var seriesTmp []jellyfin.SeriesInfo
+TvShowLoop:
+	for _, tvShow := range series {
+		for _, excludeId := range excludeShows {
+			if tvShow.ProviderIDs["Tvdb"] == excludeId {
+				fmt.Printf("Excluding %s (%s)\n", tvShow.Name, excludeId)
+				continue TvShowLoop
+			}
+		}
+		seriesTmp = append(seriesTmp, tvShow)
+	}
+	series = seriesTmp
 	fmt.Println("Checking for missing episodes...")
 	totalMissing := 0
 
